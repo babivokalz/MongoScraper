@@ -7,13 +7,14 @@
 </div>
 <div class='row'>
     <div class='col s2'>
-        <div class='sol s8 left-aligh'>
+        <div class='sol s8 left-align'>
             {{#each article}}
             <div class='card-panel'>
                 <h4>{{this.title}}</h4>
-                <a href='/readArticle/{{this._id}}' class='waves-effect waves-light btn' id='btnSignUp'>Read
+                <a href='https://allkpop.com/{{this.link}}' class='waves-effect waves-light btn' id='btnSignUp'>Read
                     Articles</a>
             </div>
+            {{/each}}
         </div>
     </div>
 </div>
