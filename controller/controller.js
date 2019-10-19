@@ -95,30 +95,26 @@ router.get("/readArticle/:id", function(req, res) {
     body: []
   };
 
-  Article.findOne({ _id: articleId })
-    .populate("comment")
-    .exec(function(err, doc) {
-      if (err) {
-        console.log("Error: " + err);
-      } else {
-        hbsObj.article = doc;
-        var link = doc.link;
-        request(link, function(error, response, html) {
-          var $ = cheerio.load(html);
-
-          $(".l-col__main").each(function(i, element) {
-            hbsObj.body = $(this)
-              .children(".c-entry-content")
-              .children("p")
-              .text();
-
-            res.render("article", hbsObj);
-            return false;
-          });
-        });
+  Article.findOne({_id: articleId}).populate("comment").exec(function(err, doc) {
+    if (err) {
+      console.log("Error: " + err);
+    } else {
+      hbsObj.article = doc;
+      var link = doc.link;
+      request`(http://www.allkpop.com${link}`, function(error, response, html) {
+        var $ = cheerio.load(html);
+        res.render('article'), {
+          article: {
+            _id: articleId,
+            title:$("#article-title").text(),
+            comment: doc.comment
+          },
+          body:$(".entry_content").children('p').text()
+        }
       }
-    });
-});
+    }
+ })
+
 router.post("/comment/:id", function(req, res) {
   var user = req.body.name;
   var content = req.body.comment;
@@ -152,5 +148,4 @@ router.post("/comment/:id", function(req, res) {
     }
   });
 });
-
 module.exports = router;
