@@ -95,25 +95,61 @@ router.get("/readArticle/:id", function(req, res) {
     body: []
   };
 
-  Article.findOne({_id: articleId}).populate("comment").exec(function(err, doc) {
-    if (err) {
-      console.log("Error: " + err);
-    } else {
-      hbsObj.article = doc;
-      var link = doc.link;
-      request`(http://www.allkpop.com${link}`, function(error, response, html) {
-        var $ = cheerio.load(html);
-        res.render('article'), {
-          article: {
-            _id: articleId,
-            title:$("#article-title").text(),
-            comment: doc.comment
-          },
-          body:$(".entry_content").children('p').text()
-        }
+  Article.findOne({ _id: articleId })
+    .populate("comment")
+    .exec(function(err, doc) {
+      if (err) {
+        console.log("Error: " + err);
+      } else {
+        hbsObj.article = doc;
+        var link = doc.link;
+        request(`http://www.allkpop.com${link}`, function(
+          error,
+          response,
+          html
+        ) {
+          var $ = cheerio.load(html);
+          res.render("article", {
+            article: {
+              _id: articleId,
+              title: $("#article-title").text(),
+              comment: doc.comment
+            },
+            body: $(".entry_content")
+              .children("p")
+              .text()
+          });
+        });
       }
-    }
- })
+    });
+});
+
+// router.get("/readArticle/:id", function(req, res) {
+//   var articleId = req.params.id;
+//   var hbsObj = {
+//     article: [],
+//     body: []
+//   };
+
+//   Article.findOne({_id: articleId}).populate("comment").exec(function(err, doc) {
+//     if (err) {
+//       console.log("Error: " + err);
+//     } else {
+//       hbsObj.article = doc;
+//       var link = doc.link;
+//       request`(http://www.allkpop.com${link}`, function(error, response, html) {
+//         var $ = cheerio.load(html);
+//         res.render('article', {
+//           article: {
+//             _id: articleId,
+//             title:$("#article-title").text(),
+//             comment: doc.comment
+//           },
+//           body:$(".entry_content").children('p').text()
+//         )};
+//       };
+//     }
+//  });
 
 router.post("/comment/:id", function(req, res) {
   var user = req.body.name;
